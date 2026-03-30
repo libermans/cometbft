@@ -776,14 +776,22 @@ func (blockExec *BlockExecutor) pruneBlocks(retainHeight int64, state State) (ui
 		return 0, nil
 	}
 
+	totalStart := time.Now()
+
+	bsStart := time.Now()
 	amountPruned, prunedHeaderHeight, err := blockExec.blockStore.PruneBlocks(retainHeight, state)
+	blockExec.metrics.BlockStorePruningTime.Observe(float64(time.Since(bsStart).Milliseconds()))
 	if err != nil {
 		return 0, fmt.Errorf("failed to prune block store: %w", err)
 	}
 
+	ssStart := time.Now()
 	err = blockExec.Store().PruneStates(base, retainHeight, prunedHeaderHeight)
+	blockExec.metrics.StateStorePruningTime.Observe(float64(time.Since(ssStart).Milliseconds()))
 	if err != nil {
 		return 0, fmt.Errorf("failed to prune state store: %w", err)
 	}
+
+	blockExec.metrics.PruningTime.Observe(float64(time.Since(totalStart).Milliseconds()))
 	return amountPruned, nil
 }

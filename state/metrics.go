@@ -26,4 +26,13 @@ type Metrics struct {
 	// updated the validator set since process start.
 	//metrics:Number of validator set updates returned by the application since process start.
 	ValidatorSetUpdates metrics.Counter
+
+	// PruningTime measures the total time spent pruning blockstore and state store.
+	PruningTime metrics.Histogram `metrics_buckettype:"lin" metrics_bucketsizes:"1, 10, 10"`
+
+	// BlockStorePruningTime measures time spent pruning the block store.
+	BlockStorePruningTime metrics.Histogram `metrics_buckettype:"lin" metrics_bucketsizes:"1, 10, 10"`
+
+	// StateStorePruningTime measures time spent pruning the state store.
+	StateStorePruningTime metrics.Histogram `metrics_buckettype:"lin" metrics_bucketsizes:"1, 10, 10"`
 }

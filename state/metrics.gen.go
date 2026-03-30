@@ -34,6 +34,30 @@ func PrometheusMetrics(namespace string, labelsAndValues ...string) *Metrics {
 			Name:      "validator_set_updates",
 			Help:      "Number of validator set updates returned by the application since process start.",
 		}, labels).With(labelsAndValues...),
+		PruningTime: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "pruning_time",
+			Help:      "Total time spent pruning blockstore and state store in ms.",
+
+			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
+		}, labels).With(labelsAndValues...),
+		BlockStorePruningTime: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "block_store_pruning_time",
+			Help:      "Time spent pruning the block store in ms.",
+
+			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
+		}, labels).With(labelsAndValues...),
+		StateStorePruningTime: prometheus.NewHistogramFrom(stdprometheus.HistogramOpts{
+			Namespace: namespace,
+			Subsystem: MetricsSubsystem,
+			Name:      "state_store_pruning_time",
+			Help:      "Time spent pruning the state store in ms.",
+
+			Buckets: stdprometheus.LinearBuckets(1, 10, 10),
+		}, labels).With(labelsAndValues...),
 	}
 }
 
@@ -42,5 +66,8 @@ func NopMetrics() *Metrics {
 		BlockProcessingTime:   discard.NewHistogram(),
 		ConsensusParamUpdates: discard.NewCounter(),
 		ValidatorSetUpdates:   discard.NewCounter(),
+		PruningTime:           discard.NewHistogram(),
+		BlockStorePruningTime: discard.NewHistogram(),
+		StateStorePruningTime: discard.NewHistogram(),
 	}
 }
